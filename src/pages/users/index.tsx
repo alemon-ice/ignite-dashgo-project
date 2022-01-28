@@ -15,38 +15,18 @@ import {
   Tr,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import axios from 'axios';
 import Link from 'next/link';
+import { useState } from 'react';
 import { RiAddLine, RiPencilLine } from 'react-icons/ri';
-import { useQuery } from 'react-query';
 import { Header } from '../../components/Header';
 import { Pagination } from '../../components/Pagination';
 import { Sidebar } from '../../components/Sidebar';
-import { api } from '../../services/api';
+import useUsers from '../../services/hooks/useUsers';
 
 export default function UserList() {
-  const { data, isLoading, isFetching, isError } = useQuery(
-    'users',
-    async () => {
-      const { data } = await api.get('/users');
-
-      const users = data.users.map((user) => ({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        createdAt: new Date(user.createdAt).toLocaleDateString('pt-BR', {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric',
-        }),
-      }));
-
-      return users;
-    },
-    {
-      staleTime: 1000 * 5,
-    }
-  );
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data, isLoading, isFetching, isError } = useUsers(currentPage);
+  console.log({ data });
 
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -101,7 +81,7 @@ export default function UserList() {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {data.map((user) => (
+                  {data.users.map((user) => (
                     <Tr key={user.id}>
                       <Td px={['4', '4', '6']}>
                         <Checkbox colorScheme="pink" />
@@ -133,7 +113,12 @@ export default function UserList() {
                 </Tbody>
               </Table>
 
-              <Pagination />
+              <Pagination
+                totalCountOfRegisters={data.totalCount}
+                registersPerPage={10}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+              />
             </>
           )}
         </Box>
