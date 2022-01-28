@@ -36,7 +36,6 @@ export function Pagination({
           Math.min(currentPage + siblingsCount, lastPage)
         )
       : [];
-  console.log({ previousPages, nextPages });
 
   return (
     <Stack
