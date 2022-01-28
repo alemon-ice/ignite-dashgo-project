@@ -44,7 +44,7 @@ export default function UserList() {
       return users;
     },
     {
-      cacheTime: 3000,
+      staleTime: 1000 * 5,
     }
   );
 
