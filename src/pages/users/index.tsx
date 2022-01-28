@@ -15,20 +15,20 @@ import {
   Tr,
   useBreakpointValue,
 } from '@chakra-ui/react';
+import axios from 'axios';
 import Link from 'next/link';
 import { RiAddLine, RiPencilLine } from 'react-icons/ri';
 import { useQuery } from 'react-query';
 import { Header } from '../../components/Header';
 import { Pagination } from '../../components/Pagination';
 import { Sidebar } from '../../components/Sidebar';
+import { api } from '../../services/api';
 
 export default function UserList() {
-  const { data, isLoading, isError, error } = useQuery(
+  const { data, isLoading, isFetching, isError } = useQuery(
     'users',
     async () => {
-      const data = await fetch('http://localhost:3000/api/users').then(
-        (response) => response.json()
-      );
+      const { data } = await api.get('/users');
 
       const users = data.users.map((user) => ({
         id: user.id,
@@ -63,7 +63,7 @@ export default function UserList() {
         <Box flex="1" borderRadius="8" bg="gray.800" p="8">
           <Flex mb="8" justify="space-between" align="center">
             <Heading size="lg" fontWeight="normal">
-              Usuários
+              Usuários {isFetching && !isLoading && <Spinner />}
             </Heading>
 
             <Link href="/users/create" passHref>
